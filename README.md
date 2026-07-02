@@ -1,0 +1,181 @@
+# ⚡ Prompt Library Injector — Extension (Manifest V3)
+
+<div align="center">
+  <p><strong>A production-grade Extension that transforms any GitHub repository into a centralized, version-controlled prompt library for AI workflows.</strong></p>
+  
+  [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+  [![Chrome Manifest V3](https://img.shields.io/badge/Chrome-Manifest_V3-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://developer.chrome.com/docs/extensions/mv3/)
+</div>
+
+---
+
+## 📖 Overview
+
+Managing complex system instructions, templates for RAG architectures, and prompts for AI agents requires a reliable **single source of truth**. Relying on local text files, Notion, or note-taking apps introduces daily friction when working across web-based LLM interfaces (ChatGPT, Claude, Gemini, Perplexity, DeepSeek, etc.).
+
+**Prompt Library Injector** solves this by turning your private or public GitHub repository into an interactive popup library. With a single click, developers can browse categorized Markdown templates, fill in dynamic variables, and instantly inject compiled prompts into any active AI chat interface.
+
+---
+
+## ✨ Key Features
+
+- **🔗 GitHub as Single Source of Truth** — Connects directly to any public or private GitHub repository via Octokit using a Personal Access Token (PAT).
+- **📂 Categorized Navigation** — Automatically organizes your prompts by folder hierarchy (e.g., `Research/`, `Dev/`, `Writing/`).
+- **⚡ Dynamic Template Variables** — Automatically parses `{{variable_name}}` placeholders in your Markdown files and presents an interactive form to fill them out before injection.
+- **🎯 Universal Smart Injection** — Features a bulletproof 3-tier injection engine (`execCommand` → React native property setter → `contenteditable` Selection API) that works seamlessly across modern controlled web apps like **ChatGPT, Claude, Gemini, and DeepSeek**.
+- **🧠 Zero-Friction Runtime Injection** — Inlines execution script fallbacks so it works even on browser tabs that were opened *before* the extension was installed, without requiring a page refresh.
+- **⚡ Offline-First Caching** — Caches your repository tree and prompt contents locally using `chrome.storage.local` to minimize GitHub API calls and ensure instant popup loading.
+- **🔍 Full-Text Instant Search** — Quickly filter through categories and prompt contents in real-time.
+
+---
+
+## 🏛️ Architecture & Workflow
+
+```
+┌────────────────────────────────────────────────────────┐
+│                   GitHub Repository                    │
+│          (Root Folder: e.g., prompts/*.md)             │
+└───────────────────────────┬────────────────────────────┘
+                            │ (Octokit / REST API)
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│               Background Service Worker                │
+│       • Fetches & Caches Tree in chrome.storage        │
+│       • Tracks Active Browser Tabs Robustly            │
+│       • Inlines Script Injection Fallbacks             │
+└───────────────────────────┬────────────────────────────┘
+                            │ (chrome.tabs.sendMessage / executeScript)
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│             Host Web Page (Active Tab)                 │
+│      • Tracks last focused input (focusin event)       │
+│      • Injects text into <textarea> / contenteditable  │
+└────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🚀 Installation & Setup Guide
+
+### Prerequisites
+- **Node.js** (v18 or higher)
+- **npm**, **pnpm**, or **yarn**
+- **Google Chrome** (or any Chromium-based browser like Edge, Arc, Brave)
+
+### 1. Clone & Build Locally
+```bash
+# Clone the repository
+git clone https://github.com/your-username/prompt-injector.git
+cd prompt-injector
+
+# Install dependencies
+npm install
+
+# Build the production extension bundle
+npm run build
+```
+*This will generate a ready-to-use `dist/` folder in your project directory.*
+
+### 2. Load into Chrome
+1. Open Chrome and navigate to `chrome://extensions/`.
+2. Enable **Developer mode** via the toggle in the top right corner.
+3. Click the **Load unpacked** button in the top left.
+4. Select the `dist/` directory generated by the build command.
+
+---
+
+## ⚙️ Configuration (First Launch)
+
+When you click the extension icon for the first time, you will be prompted to enter your GitHub repository settings:
+
+1. **Personal Access Token (PAT)**:
+   - Go to [GitHub Token Settings](https://github.com/settings/tokens).
+   - Generate a **Fine-grained token** (Recommended: Scoped to your prompt repo with **`Contents: Read-only`** permission) or a **Classic token** (with `repo` scope).
+   - *Note: Your token is stored securely offline in `chrome.storage.local` on your local machine and never leaves your browser.*
+2. **Owner**: Your GitHub username or organization name (e.g., `octocat`).
+3. **Repository**: The name of your repository containing the prompts (e.g., `my-prompts`).
+4. **Root Folder Path**: The target folder inside your repo where categories live (e.g., `prompts` or leave empty/`./` if in the root).
+
+Click **Save & Connect** to perform the initial sync!
+
+---
+
+## 📁 Repository & Prompt Formatting
+
+Your GitHub repository must follow a simple 2-level structure inside your configured **Root Folder Path**:
+
+```text
+my-prompts/               ← Root Folder Path
+├── Research/             ← Category Subfolder
+│   ├── literature-review.md
+│   └── code-analysis.md
+├── Engineering/          ← Category Subfolder
+│   ├── pr-review.md
+│   └── sql-optimizer.md
+└── Copywriting/
+    └── email-sequence.md
+```
+*Every folder inside the root path represents a **Category** in the sidebar. Every `.md` file inside those folders represents a **Prompt**.*
+
+### 🪄 Using Dynamic Variables
+
+To make your prompts interactive, use double curly braces `{{variable_name}}` inside your Markdown files:
+
+```markdown
+# Role
+You are a Principal Software Engineer specializing in {{language}} and {{framework}}.
+
+# Task
+Please conduct a thorough code review of the following implementation, focusing specifically on {{focus_area}}:
+
+{{code_snippet}}
+```
+
+When you click this prompt in the extension, a sleek form will automatically generate with input fields for `language`, `framework`, `focus_area`, and `code_snippet`. Once filled out, clicking **Inject Prompt** compiles the final text and drops it into your chat!
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology | Description |
+|---|---|---|
+| **UI Framework** | React 18 + TypeScript | Functional components, custom hooks, strict typing |
+| **Bundler** | Vite 5 + `@crxjs/vite-plugin` | Manifest V3 HMR, seamless service worker & content script bundling |
+| **Styling** | Tailwind CSS v3 | Custom dark-mode design system, glassmorphism, micro-animations |
+| **API Client** | Octokit | Official GitHub REST API SDK |
+| **Extension APIs** | Chrome MV3 | `chrome.storage.local`, `chrome.scripting`, `chrome.tabs`, `chrome.runtime` |
+
+---
+
+## 🧑‍💻 Development Guide
+
+To run the project in development mode with Hot Module Replacement (HMR):
+
+```bash
+# Start the Vite dev server
+npm run dev
+```
+
+1. Load the `dist/` folder into Chrome as an unpacked extension.
+2. Changes made to React UI components will automatically hot-reload in the popup without needing to manually reload the extension!
+3. *Note: If you make changes to `src/background/index.ts` or `src/content/index.ts`, click the 🔄 reload button on the extension card in `chrome://extensions/`.*
+
+---
+
+## ❓ Troubleshooting
+
+- **Error: `Cannot inject on this page (chrome:// or restricted URLs)`**  
+  Chrome natively blocks extensions from injecting scripts into internal browser pages (`chrome://*`, `about:*`, the Chrome Web Store, or Edge settings). Navigate to an actual web page (like `https://chatgpt.com`) and try again.
+- **My prompt didn't inject into a specific web app!**  
+  Make sure you **click inside the text input box** on the target web page first so the browser records it as the active focused element before you open the popup.
+- **Prompts are not syncing from GitHub:**  
+  Check that your Personal Access Token hasn't expired and ensure your **Root Folder Path** matches exactly (case-sensitive) without leading slashes.
+
+---
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).

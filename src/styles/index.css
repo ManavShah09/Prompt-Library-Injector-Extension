@@ -1,0 +1,186 @@
+/* ── Google Font import ──────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS Custom Properties ───────────────────────────────────────────────── */
+:root {
+  --popup-w: 380px;
+  --popup-h: 560px;
+
+  /* Surface scale */
+  --surface-base:     #0d0d14;
+  --surface-card:     #13131f;
+  --surface-elevated: #1a1a2e;
+  --surface-border:   #252540;
+  --surface-hover:    #1e1e35;
+
+  /* Brand */
+  --brand-400: #a78bfa;
+  --brand-500: #8b5cf6;
+  --brand-600: #7c3aed;
+  --brand-700: #6d28d9;
+
+  /* Ink */
+  --ink-primary:   #f1f0ff;
+  --ink-secondary: #a9a8c8;
+  --ink-muted:     #5e5c7a;
+  --ink-accent:    #a78bfa;
+
+  /* Status */
+  --status-success: #10b981;
+  --status-error:   #f87171;
+  --status-warning: #fbbf24;
+
+  /* Glow */
+  --glow-brand: 0 0 20px rgba(124, 58, 237, 0.35);
+}
+
+/* ── Base Reset ──────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width:  var(--popup-w);
+  height: var(--popup-h);
+  overflow: hidden;
+  background: var(--surface-base);
+  color: var(--ink-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+#root {
+  width:  var(--popup-w);
+  height: var(--popup-h);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Scrollbar Styling ───────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-border);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-muted);
+}
+
+/* ── Input base ──────────────────────────────────────────────────────────── */
+.input-base {
+  @apply w-full rounded-lg px-3 py-2.5 text-sm
+    bg-surface-elevated border border-surface-border
+    text-ink-primary placeholder-ink-muted
+    outline-none ring-0
+    transition-all duration-150
+    focus:border-brand-600 focus:ring-1 focus:ring-brand-600/40;
+}
+
+/* ── Button variants ─────────────────────────────────────────────────────── */
+.btn-primary {
+  @apply flex items-center justify-center gap-2
+    rounded-lg px-4 py-2.5 text-sm font-medium
+    bg-brand-600 text-white
+    hover:bg-brand-700 active:scale-[0.98]
+    disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100
+    transition-all duration-150 shadow-glow-sm;
+}
+
+.btn-ghost {
+  @apply flex items-center justify-center gap-1.5
+    rounded-lg px-3 py-2 text-sm font-medium
+    text-ink-secondary
+    hover:bg-surface-hover hover:text-ink-primary
+    active:scale-[0.97]
+    disabled:opacity-40 disabled:cursor-not-allowed
+    transition-all duration-150;
+}
+
+.btn-icon {
+  @apply flex items-center justify-center
+    rounded-lg p-1.5
+    text-ink-muted
+    hover:bg-surface-hover hover:text-ink-secondary
+    active:scale-95
+    transition-all duration-150;
+}
+
+/* ── Category pill ───────────────────────────────────────────────────────── */
+.category-item {
+  @apply w-full text-left px-3 py-2 rounded-lg text-sm
+    text-ink-secondary truncate
+    hover:bg-surface-hover hover:text-ink-primary
+    transition-all duration-100 cursor-pointer;
+}
+
+.category-item.active {
+  @apply bg-brand-600/15 text-brand-400 font-medium;
+  box-shadow: inset 2px 0 0 var(--brand-600);
+}
+
+/* ── Prompt card ─────────────────────────────────────────────────────────── */
+.prompt-card {
+  @apply w-full text-left px-3 py-2.5 rounded-lg
+    border border-transparent
+    hover:border-surface-border hover:bg-surface-hover
+    active:scale-[0.99]
+    transition-all duration-100 cursor-pointer;
+}
+
+.prompt-card .prompt-title {
+  @apply text-sm font-medium text-ink-primary leading-tight mb-0.5;
+}
+
+.prompt-card .prompt-snippet {
+  @apply text-xs text-ink-muted leading-relaxed line-clamp-2;
+}
+
+.prompt-card:hover .prompt-title {
+  @apply text-brand-400;
+}
+
+/* ── Badge ───────────────────────────────────────────────────────────────── */
+.badge {
+  @apply inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium
+    bg-brand-600/20 text-brand-400;
+}
+
+/* ── Divider ─────────────────────────────────────────────────────────────── */
+.divider {
+  @apply border-t border-surface-border;
+}
+
+/* ── Glass card ──────────────────────────────────────────────────────────── */
+.glass-card {
+  background: rgba(26, 26, 46, 0.7);
+  border: 1px solid var(--surface-border);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+}
+
+/* ── Gradient header ──────────────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
